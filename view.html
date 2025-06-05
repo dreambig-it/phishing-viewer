@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Phishing Page Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const rid = params.get("rid");
+
+      if (!rid) {
+        document.body.innerHTML = "<h2>Error: 'rid' parameter is missing in the URL.</h2>";
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://lms.cyberyami.com/api/phishing/view?rid=${encodeURIComponent(rid)}`);
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const html = await response.text();
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (err) {
+        document.body.innerHTML = `<h2>Failed to load phishing page:</h2><pre>${err.message}</pre>`;
+      }
+    })();
+  </script>
+</body>
+</html>
